@@ -237,24 +237,33 @@ body{margin:0;padding:0;background:#F4F5F7;font-family:Arial,sans-serif}
 .pass-img{width:100%;border-radius:8px;display:block;margin-bottom:22px;border:1px solid #E5E7EB}
 .card{background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;overflow:hidden;margin-bottom:22px}
 .card-head{background:#1A3B6E;color:rgba(255,255,255,.6);font-size:9px;letter-spacing:2px;padding:8px 16px;font-weight:700;text-transform:uppercase}
-.row{display:flex;justify-content:space-between;padding:9px 16px;font-size:13px;border-bottom:1px solid #E5E7EB}
+.row{padding:9px 16px;font-size:13px;border-bottom:1px solid #E5E7EB;overflow:hidden}
 .row:last-child{border-bottom:none}
-.rk{color:#6B7280}
-.rv{font-weight:700;color:#111827;font-family:'Courier New',monospace}
+.rk{color:#6B7280;float:left}
+.rv{font-weight:700;color:#111827;font-family:'Courier New',monospace;float:right;max-width:70%;text-align:right}
 .tip{background:#FFF8F0;border:1px solid #F5A623;border-radius:8px;padding:14px 16px;margin-bottom:22px}
 .tip p{font-size:13px;color:#92400E;margin:0;line-height:1.6}
 .stores p{font-size:10px;color:#6B7280;letter-spacing:1px;text-transform:uppercase;margin:0 0 10px;font-weight:700}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px}
-.chip{font-size:12px;padding:4px 12px;border:1px solid #E5E7EB;border-radius:20px;color:#374151}
+.ptable{width:100%;margin-bottom:22px;table-layout:fixed;border-collapse:separate;border-spacing:8px;}
+.ptable td{border:1px solid #E5E7EB;border-radius:6px;padding:8px;text-align:center;background:#fff;vertical-align:middle;}
+.ptable img{max-width:100%;max-height:32px;display:block;margin:0 auto;}
+.pt-more{font-size:12px;font-weight:600;color:#1A3B6E;}
 .footer{background:#F9FAFB;border-top:1px solid #E5E7EB;padding:16px 32px;text-align:center}
 .footer p{font-size:11px;color:#9CA3AF;margin:0;line-height:1.8}
 </style></head>
 <body>
 <div class="wrap">
-  <div class="hd">
-    <h1>GMR AEROCITY</h1>
-    <p>NEW DELHI &nbsp;&middot;&nbsp; EXCLUSIVE BOARDING PASS</p>
-  </div>
+  <table class="hd" width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+      <td valign="middle">
+        <h1>GMR AEROCITY</h1>
+        <p>NEW DELHI &nbsp;&middot;&nbsp; EXCLUSIVE BOARDING PASS</p>
+      </td>
+      <td align="right" valign="middle">
+        <img src="https://gmr-4a30.onrender.com/gmr-logo.png" alt="GMR" style="height:32px; background:#fff; padding:4px 8px; border-radius:6px; display:block;" />
+      </td>
+    </tr>
+  </table>
   <div class="body">
     <div class="greeting">Hi ${name},</div>
     <div class="sub">Your GMR Aerocity Boarding Pass is ready. Show the pass (or scan the QR code) at the billing counter of any partner store to get your discount applied.</div>
@@ -276,15 +285,18 @@ body{margin:0;padding:0;background:#F4F5F7;font-family:Arial,sans-serif}
 
     <div class="stores">
       <p>Valid at partner stores</p>
-      <div class="chips">
-        <span class="chip">Costa Coffee</span>
-        <span class="chip">Burger King</span>
-        <span class="chip">Duty Free</span>
-        <span class="chip">The Body Shop</span>
-        <span class="chip">Cafe Central</span>
-        <span class="chip">Relay</span>
-        <span class="chip">+ 35 more</span>
-      </div>
+      <table class="ptable" cellpadding="0" cellspacing="0">
+        <tr>
+          <td><img src="https://gmr-4a30.onrender.com/partners/Roseate%20Del.png" alt="Roseate"/></td>
+          <td><img src="https://gmr-4a30.onrender.com/partners/bluetokai.png" alt="Blue Tokai"/></td>
+          <td><img src="https://gmr-4a30.onrender.com/partners/burma-logo.webp" alt="Burma Burma"/></td>
+        </tr>
+        <tr>
+          <td><img src="https://gmr-4a30.onrender.com/partners/costa.png" alt="Costa Coffee"/></td>
+          <td><img src="https://gmr-4a30.onrender.com/partners/lemon-tree-citrus-cafe.webp" alt="Citrus Cafe"/></td>
+          <td><div class="pt-more">and<br>more</div></td>
+        </tr>
+      </table>
     </div>
   </div>
   <div class="footer">
