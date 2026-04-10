@@ -352,7 +352,7 @@ app.post('/send-pass', async (req, res) => {
 
 // ── Start ──────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`\nGMR Aerocity Pass Server → http://localhost:${PORT}`);
   if (!process.env.GMAIL_USER) console.warn('WARNING: GMAIL_USER missing in .env');
   else console.log(`Gmail: ${process.env.GMAIL_USER}\n`);
