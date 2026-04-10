@@ -148,10 +148,9 @@ body{width:840px;height:360px;overflow:hidden;background:transparent;font-family
       </div>
 
       <!-- Pass meta -->
-      <div class="meta-row">
+      <div class="meta-row" style="justify-content: space-between;">
         <div class="meta-item"><div class="ml">Pass ID</div><div class="mv">${passId}</div></div>
         <div class="meta-item"><div class="ml">Date</div><div class="mv">${todayStr()}</div></div>
-        <div class="meta-item"><div class="ml">Access</div><div class="mv">PARTNER STORES</div></div>
       </div>
 
     </div>
@@ -238,8 +237,8 @@ body{margin:0;padding:0;background:#F4F5F7;font-family:Arial,sans-serif}
 .tip p{font-size:13px;color:#92400E;margin:0;line-height:1.6}
 .stores p{font-size:10px;color:#6B7280;letter-spacing:1px;text-transform:uppercase;margin:0 0 10px;font-weight:700}
 .ptable{width:100%;margin-bottom:22px;table-layout:fixed;border-collapse:separate;border-spacing:8px;}
-.ptable td{border:1px solid #E5E7EB;border-radius:6px;padding:8px;text-align:center;background:#fff;vertical-align:middle;}
-.ptable img{max-width:100%;max-height:32px;display:block;margin:0 auto;}
+.ptable td{border:1px solid #E5E7EB;border-radius:6px;padding:12px;text-align:center;background:#fff;vertical-align:middle;}
+.ptable img{max-width:100%;max-height:48px;display:block;margin:0 auto;}
 .pt-more{font-size:12px;font-weight:600;color:#1A3B6E;}
 .footer{background:#F9FAFB;border-top:1px solid #E5E7EB;padding:16px 32px;text-align:center}
 .footer p{font-size:11px;color:#9CA3AF;margin:0;line-height:1.8}
@@ -259,7 +258,7 @@ body{margin:0;padding:0;background:#F4F5F7;font-family:Arial,sans-serif}
   </table>
   <div class="body">
     <div class="greeting">Hi ${name},</div>
-    <div class="sub">Your GMR Aerocity boarding pass is ready Show the pass (or scan the QR code) at the billing counter of any partner store to get your discount applied</div>
+    <div class="sub">Your GMR Aerocity boarding pass is ready show the pass (or scan the QR code) at the billing counter of any partner store to avail your discount</div>
 
     <img src="cid:boardingpass" alt="GMR Aerocity Pass" class="pass-img" />
 
@@ -285,7 +284,7 @@ body{margin:0;padding:0;background:#F4F5F7;font-family:Arial,sans-serif}
           <td><img src="https://gmr-4a30.onrender.com/partners/burma-logo.webp" alt="Burma Burma"/></td>
         </tr>
         <tr>
-          <td><img src="https://gmr-4a30.onrender.com/partners/costa.png" alt="Costa Coffee"/></td>
+          <td><img src="https://gmr-4a30.onrender.com/partners/costa.png" alt="Costa Coffee" style="max-height:56px;"/></td>
           <td><img src="https://gmr-4a30.onrender.com/partners/lemon-tree-citrus-cafe.webp" alt="Citrus Cafe"/></td>
           <td><div class="pt-more">and<br>more</div></td>
         </tr>
