@@ -21,7 +21,10 @@ app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'gmr-aerocity-pass.
 
 // ── Gmail ──────────────────────────────────────────────────────────────────
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false, // upgrade later with STARTTLS
+  requireTLS: true,
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_APP_PASSWORD
