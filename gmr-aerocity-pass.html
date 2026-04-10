@@ -385,13 +385,11 @@
 
     <div class="page-body">
       <div class="welcome-heading">Welcome to<br>GMR Aerocity</div>
-      <div class="welcome-sub">
-        Register your details and receive an exclusive Boarding Pass on mail valid today at our partner stores.
-      </div>
+      <div class="welcome-sub">Enter your details and receive an exclusive boarding pass on your e-mail valid at our partner stores</div>
 
       <div class="steps">
         <div class="step"><div class="step-num">1</div><div class="step-lbl">Register</div></div>
-        <div class="step"><div class="step-num">2</div><div class="step-lbl">Get Pass</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-lbl">Get your pass</div></div>
         <div class="step"><div class="step-num">3</div><div class="step-lbl">Avail Discounts</div></div>
       </div>
 
@@ -400,13 +398,12 @@
         <div class="store-logo"><img src="partners/Roseate%20Del.png" alt="Roseate" /></div>
         <div class="store-logo"><img src="partners/bluetokai.png" alt="Blue Tokai" /></div>
         <div class="store-logo"><img src="partners/burma-logo.webp" alt="Burma Burma" /></div>
-        <div class="store-logo"><img src="partners/costa.png" alt="Costa Coffee" style="max-height:80%" /></div>
+        <div class="store-logo"><img src="partners/costa.png" alt="Costa Coffee" style="transform:scale(1.2)" /></div>
         <div class="store-logo"><img src="partners/lemon-tree-citrus-cafe.webp" alt="Citrus Cafe" /></div>
         <div class="store-logo store-more">and<br>more</div>
       </div>
 
-      <button class="btn-primary" onclick="show('s-form')">Get My Boarding Pass</button>
-      <div class="foot-note">Free &nbsp;&middot;&nbsp; No account needed &nbsp;&middot;&nbsp; Valid today</div>
+      <button class="btn-primary" onclick="show('s-form')">Get my boarding pass</button>
     </div>
   </div>
 
@@ -420,7 +417,7 @@
 
     <div class="page-body">
       <div class="form-title">Your Details</div>
-      <div class="form-sub">Fill in your details and get your pass on mail.</div>
+      <div class="form-sub">Fill in your details and get your boarding pass</div>
 
       <div class="section-lbl">Personal</div>
 
@@ -444,7 +441,7 @@
 
       <div class="error-box" id="form-err"></div>
 
-      <button class="btn-primary" style="margin-top:8px" onclick="submitForm()">Send Pass to Email</button>
+      <button class="btn-primary" style="margin-top:8px" onclick="submitForm()">Send</button>
       <button class="btn-secondary" onclick="show('s-welcome')">Back</button>
     </div>
   </div>
@@ -472,7 +469,7 @@
           <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
         <div class="success-title">Checked In</div>
-        <div class="success-sub">Your Boarding Pass has been sent to your email inbox.<br>Open it on your phone and show the QR at any store.</div>
+        <div class="success-sub">Your boarding pass has been sent to your email inbox<br>Open it on your phone and show the QR at any store</div>
 
         <div class="pass-badge" id="r-pass-id">GMR-XXXXXX</div>
 
@@ -490,7 +487,7 @@
       <!-- Error -->
       <div class="error-wrap" id="st-error">
         <div class="err-title">Could not send pass</div>
-        <div class="err-msg" id="r-err-msg">Something went wrong.</div>
+        <div class="err-msg" id="r-err-msg">Something went wrong</div>
         <button class="btn-primary" onclick="show('s-form')">Try Again</button>
       </div>
 
@@ -529,10 +526,10 @@
     const email = document.getElementById('f-email').value.trim();
     const phone = document.getElementById('f-phone').value.trim();
 
-    if (!name)  return showErr('Please enter your full name.');
-    if (!email) return showErr('Please enter your email address.');
-    if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) return showErr('Please enter a valid email address.');
-    if (!phone || phone.length < 10) return showErr('Enter a valid 10-digit phone number.');
+    if (!name)  return showErr('Please enter your full name');
+    if (!email) return showErr('Please enter your email address');
+    if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) return showErr('Please enter a valid email address');
+    if (!phone || phone.length < 10) return showErr('Enter a valid 10-digit phone number');
 
     show('s-result');
     setState('loading');

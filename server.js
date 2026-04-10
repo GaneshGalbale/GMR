@@ -139,14 +139,7 @@ body{width:840px;height:360px;overflow:hidden;background:transparent;font-family
           <div class="dest-word">DINE</div>
           <div class="dest-sub">Your journey</div>
         </div>
-        <div class="dest-mid">
-          <div class="dest-line-wrap">
-            <div class="dest-dash"></div>
-            <div class="dest-diamond"></div>
-            <div class="dest-dash"></div>
-          </div>
-          <div class="dest-tag">DESTINATION</div>
-        </div>
+        <div class="dest-mid"></div>
         <div class="dest-right">
           <div class="dest-word" style="text-align:right">GMR</div>
           <div class="dest-word" style="text-align:right">AEROCITY</div>
@@ -175,7 +168,7 @@ body{width:840px;height:360px;overflow:hidden;background:transparent;font-family
     <div class="bc">${bars}</div>
     <div>
       <div class="fid">${passId}</div>
-      <div class="fv">VALID TODAY ONLY</div>
+      <div class="fv">VALID ONLY TODAY</div>
     </div>
     <div class="fr">
       <div class="fst">Partner Stores</div>
@@ -266,7 +259,7 @@ body{margin:0;padding:0;background:#F4F5F7;font-family:Arial,sans-serif}
   </table>
   <div class="body">
     <div class="greeting">Hi ${name},</div>
-    <div class="sub">Your GMR Aerocity Boarding Pass is ready. Show the pass (or scan the QR code) at the billing counter of any partner store to get your discount applied.</div>
+    <div class="sub">Your GMR Aerocity boarding pass is ready Show the pass (or scan the QR code) at the billing counter of any partner store to get your discount applied</div>
 
     <img src="cid:boardingpass" alt="GMR Aerocity Pass" class="pass-img" />
 
@@ -276,11 +269,11 @@ body{margin:0;padding:0;background:#F4F5F7;font-family:Arial,sans-serif}
       <div class="row"><span class="rk">Guest</span><span class="rv">${name.toUpperCase()}</span></div>
       <div class="row"><span class="rk">Email</span><span class="rv">${email}</span></div>
       <div class="row"><span class="rk">Phone</span><span class="rv">${phone}</span></div>
-      <div class="row"><span class="rk">Valid</span><span class="rv">Today only</span></div>
+      <div class="row"><span class="rk">Valid</span><span class="rv">Only today</span></div>
     </div>
 
     <div class="tip">
-      <p><strong>How to use:</strong> Open this email on your phone or take a screenshot. Show the QR code at the billing counter at any GMR Aerocity partner store for your discount.</p>
+      <p><strong>How to use:</strong> Open this email on your phone or take a screenshot Show the QR code at the billing counter at any GMR Aerocity partner store for your discount</p>
     </div>
 
     <div class="stores">
@@ -300,8 +293,8 @@ body{margin:0;padding:0;background:#F4F5F7;font-family:Arial,sans-serif}
     </div>
   </div>
   <div class="footer">
-    <p>GMR Aerocity New Delhi &nbsp;&middot;&nbsp; Valid today only &nbsp;&middot;&nbsp; Non-transferable<br>
-    This is an automated message. Please do not reply.</p>
+    <p>GMR Aerocity New Delhi &nbsp;&middot;&nbsp; Valid only today &nbsp;&middot;&nbsp; Non-transferable<br>
+    This is an automated message Please do not reply</p>
   </div>
 </div>
 </body></html>`;
