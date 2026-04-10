@@ -158,7 +158,7 @@ body{width:840px;height:360px;overflow:hidden;background:transparent;font-family
       <div class="meta-row">
         <div class="meta-item"><div class="ml">Pass ID</div><div class="mv">${passId}</div></div>
         <div class="meta-item"><div class="ml">Date</div><div class="mv">${todayStr()}</div></div>
-        <div class="meta-item"><div class="ml">Access</div><div class="mv">40+ STORES</div></div>
+        <div class="meta-item"><div class="ml">Access</div><div class="mv">PARTNER STORES</div></div>
       </div>
 
     </div>
@@ -179,7 +179,7 @@ body{width:840px;height:360px;overflow:hidden;background:transparent;font-family
     </div>
     <div class="fr">
       <div class="fst">Partner Stores</div>
-      <div class="fsl">Costa · Burger King · Duty Free · 40+ more</div>
+      <div class="fsl">Roseate · Blue Tokai · Burma Burma · Costa Coffee · Citrus Cafe · and more</div>
     </div>
   </div>
 
