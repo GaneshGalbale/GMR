@@ -118,7 +118,7 @@ body{width:840px;height:360px;overflow:hidden;background:transparent;font-family
 <div class="pass">
 
   <div class="hd">
-    <div><div class="ht">GMR AEROCITY</div><div class="hs">NEW DELHI &nbsp;·&nbsp; EXCLUSIVE SHOPPING PASS</div></div>
+    <div><div class="ht">GMR AEROCITY</div><div class="hs">NEW DELHI &nbsp;·&nbsp; EXCLUSIVE BOARDING PASS</div></div>
     <div class="hb">UP TO 20% OFF</div>
   </div>
 
@@ -253,11 +253,11 @@ body{margin:0;padding:0;background:#F4F5F7;font-family:Arial,sans-serif}
 <div class="wrap">
   <div class="hd">
     <h1>GMR AEROCITY</h1>
-    <p>NEW DELHI &nbsp;&middot;&nbsp; EXCLUSIVE SHOPPING PASS</p>
+    <p>NEW DELHI &nbsp;&middot;&nbsp; EXCLUSIVE BOARDING PASS</p>
   </div>
   <div class="body">
     <div class="greeting">Hi ${name},</div>
-    <div class="sub">Your GMR Aerocity Shopping Pass is ready. Show the pass (or scan the QR code) at the billing counter of any partner store to get your discount applied.</div>
+    <div class="sub">Your GMR Aerocity Boarding Pass is ready. Show the pass (or scan the QR code) at the billing counter of any partner store to get your discount applied.</div>
 
     <img src="cid:boardingpass" alt="GMR Aerocity Pass" class="pass-img" />
 
@@ -300,7 +300,7 @@ async function sendPassEmail({ toEmail, name, passId, phone, imagePath }) {
   await transporter.sendMail({
     from:    `"GMR Aerocity" <${process.env.GMAIL_USER}>`,
     to:      toEmail,
-    subject: `Your GMR Aerocity Shopping Pass — ${passId}`,
+    subject: `Your GMR Aerocity Boarding Pass — ${passId}`,
     html:    buildEmailHTML({ name, passId, email: toEmail, phone }),
     attachments: [{
       filename: `GMR-Pass-${passId}.png`,

@@ -364,20 +364,19 @@
       <img src="gmr-logo.png" alt="GMR Aerocity" id="logo-welcome"
            onerror="this.style.display='none';document.getElementById('logo-fallback-w').style.display='block'" />
       <span id="logo-fallback-w" style="display:none;font-size:15px;font-weight:700;color:#1A3B6E;letter-spacing:1px">GMR AEROCITY</span>
-      <span class="top-bar-tag">Discount Pass</span>
+      <span class="top-bar-tag">Boarding Pass</span>
     </div>
 
     <div class="page-body">
       <div class="welcome-heading">Welcome to<br>GMR Aerocity</div>
       <div class="welcome-sub">
-        Register your details and receive an exclusive discount pass on WhatsApp — valid today at 40+ stores.
+        Register your details and receive an exclusive Boarding Pass on mail valid today at 40+ stores.
       </div>
 
       <div class="steps">
         <div class="step"><div class="step-num">1</div><div class="step-lbl">Register</div></div>
         <div class="step"><div class="step-num">2</div><div class="step-lbl">Get Pass</div></div>
-        <div class="step"><div class="step-num">3</div><div class="step-lbl">WhatsApp</div></div>
-        <div class="step"><div class="step-num">4</div><div class="step-lbl">Save</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-lbl">Avail Discounts</div></div>
       </div>
 
       <div class="section-title">Our Partners</div>
@@ -391,7 +390,7 @@
         <span class="store-tag">+ 35 more</span>
       </div>
 
-      <button class="btn-primary" onclick="show('s-form')">Get My Discount Pass</button>
+      <button class="btn-primary" onclick="show('s-form')">Get My Boarding Pass</button>
       <div class="foot-note">Free &nbsp;&middot;&nbsp; No account needed &nbsp;&middot;&nbsp; Valid today</div>
     </div>
   </div>
@@ -402,12 +401,11 @@
     <div class="top-bar">
       <img src="gmr-logo.png" alt="GMR Aerocity"
            onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span style=\'font-size:15px;font-weight:700;color:#1A3B6E\'>GMR AEROCITY</span>')" />
-      <span class="top-bar-tag">Step 1 of 1</span>
     </div>
 
     <div class="page-body">
       <div class="form-title">Your Details</div>
-      <div class="form-sub">Takes under a minute. Your pass will arrive on WhatsApp.</div>
+      <div class="form-sub">Fill in your details and get your pass on mail.</div>
 
       <div class="section-lbl">Personal</div>
 
@@ -442,7 +440,6 @@
     <div class="top-bar">
       <img src="gmr-logo.png" alt="GMR Aerocity"
            onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span style=\'font-size:15px;font-weight:700;color:#1A3B6E\'>GMR AEROCITY</span>')" />
-      <span class="top-bar-tag" id="result-tag">Sending...</span>
     </div>
 
     <div class="result-center">
@@ -459,8 +456,8 @@
         <div class="check-circle">
           <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
-        <div class="success-title">Pass Sent</div>
-        <div class="success-sub">Your discount pass has been sent to your email inbox.<br>Open it on your phone and show the QR at any store.</div>
+        <div class="success-title">Checked In</div>
+        <div class="success-sub">Your Boarding Pass has been sent to your email inbox.<br>Open it on your phone and show the QR at any store.</div>
 
         <div class="pass-badge" id="r-pass-id">GMR-XXXXXX</div>
 
@@ -469,7 +466,7 @@
           <div class="summary-row"><span class="sr-key">Sent to</span><span class="sr-val" id="r-email">—</span></div>
           <div class="summary-row"><span class="sr-key">Pass ID</span><span class="sr-val" id="r-pid">—</span></div>
           <div class="summary-row"><span class="sr-key">Status</span><span class="sr-val green">Delivered</span></div>
-          <div class="summary-row"><span class="sr-key">Valid until</span><span class="sr-val">End of today</span></div>
+          <div class="summary-row"><span class="sr-key">Valid until</span><span class="sr-val" id="r-timer">24h 00m 00s</span></div>
         </div>
 
         <button class="btn-primary" style="width:100%" onclick="downloadPass()">Download Pass</button>
@@ -523,7 +520,6 @@
     if (!phone || phone.length < 10) return showErr('Enter a valid 10-digit phone number.');
 
     show('s-result');
-    document.getElementById('result-tag').textContent = 'Sending...';
     setState('loading');
 
     try {
@@ -539,11 +535,10 @@
       document.getElementById('r-pass-id').textContent = data.passId;
       document.getElementById('r-pid').textContent     = data.passId;
       document.getElementById('r-email').textContent   = email;
-      document.getElementById('result-tag').textContent = 'Checked In';
       setState('success');
+      startTimer();
 
     } catch (err) {
-      document.getElementById('result-tag').textContent = 'Failed';
       document.getElementById('r-err-msg').textContent  = err.message;
       setState('error');
     }
@@ -566,7 +561,29 @@
     show('s-welcome');
   }
 
-  document.getElementById('f-date').valueAsDate = new Date();
+  let timerInterval;
+  function startTimer() {
+    let timeLeft = 24 * 60 * 60; // 24 hours in seconds
+    const el = document.getElementById('r-timer');
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      if (timeLeft < 0) {
+        clearInterval(timerInterval);
+        el.textContent = "Expired";
+        return;
+      }
+      const h = Math.floor(timeLeft / 3600).toString().padStart(2, '0');
+      const m = Math.floor((timeLeft % 3600) / 60).toString().padStart(2, '0');
+      const s = (timeLeft % 60).toString().padStart(2, '0');
+      el.textContent = `${h}h ${m}m ${s}s`;
+    }, 1000);
+    // Initial display
+    const h = Math.floor(timeLeft / 3600).toString().padStart(2, '0');
+    const m = Math.floor((timeLeft % 3600) / 60).toString().padStart(2, '0');
+    const s = (timeLeft % 60).toString().padStart(2, '0');
+    el.textContent = `${h}h ${m}m ${s}s`;
+  }
 </script>
 </body>
 </html>
