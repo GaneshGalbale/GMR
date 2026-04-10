@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GMR Aerocity — Discount Pass</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #1A3B6E;
+      --amber:  #E87722;
+      --text:   #111827;
+      --muted:  #6B7280;
+      --light:  #F9FAFB;
+      --border: #E5E7EB;
+      --red:    #DC2626;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #F4F5F7;
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 0;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 420px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+
+    /* Screens */
+    .screen { display: none; }
+    .screen.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── Amber accent strip ── */
+    .accent-strip { height: 3px; background: var(--amber); }
+
+    /* ── Header ── */
+    .top-bar {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .top-bar img { height: 34px; object-fit: contain; }
+    .top-bar-tag {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Page body ── */
+    .page-body { padding: 28px 24px 32px; }
+
+    /* ── Welcome ── */
+    .welcome-heading {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+    .welcome-sub {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 28px;
+      max-width: 360px;
+    }
+
+    /* Steps */
+    .steps {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 28px;
+      position: relative;
+    }
+    /* connecting line behind circles */
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 13px;
+      left: calc(12.5% );
+      width: 75%;
+      height: 1px;
+      background: var(--border);
+      z-index: 0;
+    }
+    .step { flex: 1; text-align: center; }
+    .step-num {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 7px;
+      position: relative;
+      z-index: 1;
+    }
+    .step-lbl {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    /* Valid at */
+    .section-title {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .store-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 28px;
+    }
+    .store-tag {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text);
+      padding: 5px 12px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: #fff;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: var(--amber);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      letter-spacing: 0.2px;
+    }
+    .btn-primary:hover { background: #d06a1a; }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-top: 8px;
+    }
+    .btn-secondary:hover { border-color: var(--navy); color: var(--navy); }
+
+    .foot-note {
+      text-align: center;
+      font-size: 11px;
+      color: #D1D5DB;
+      margin-top: 14px;
+    }
+
+    /* ── Form ── */
+    .form-title { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+    .form-sub   { font-size: 13px; color: var(--muted); margin-bottom: 24px; line-height: 1.5; }
+
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--navy);
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .field label .opt { color: var(--muted); font-weight: 400; text-transform: none; letter-spacing: 0; }
+    .field input, .field select {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--light);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 13.5px;
+      outline: none;
+      transition: border-color 0.15s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--navy);
+      background: #fff;
+    }
+    .field input::placeholder { color: #D1D5DB; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .phone-row { display: flex; }
+    .phone-pre {
+      padding: 10px 11px;
+      background: var(--navy);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 6px 0 0 6px;
+      white-space: nowrap;
+      border: 1px solid var(--navy);
+      flex-shrink: 0;
+    }
+    .phone-row input {
+      border-radius: 0 6px 6px 0 !important;
+      border-left: none !important;
+    }
+
+    .divider { height: 1px; background: var(--border); margin: 18px 0; }
+
+    .section-lbl {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+    }
+
+    .error-box {
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      border-radius: 6px;
+      padding: 9px 12px;
+      font-size: 13px;
+      color: var(--red);
+      margin-top: 4px;
+      margin-bottom: 14px;
+      display: none;
+    }
+    .error-box.show { display: block; }
+
+    /* ── Result ── */
+    .result-center {
+      min-height: calc(100vh - 55px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 24px;
+    }
+
+    /* Loader */
+    .loader { display: block; }
+    .spin {
+      width: 36px; height: 36px;
+      border: 2.5px solid var(--border);
+      border-top-color: var(--navy);
+      border-radius: 50%;
+      margin: 0 auto 18px;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-title { font-size: 16px; font-weight: 600; color: var(--navy); margin-bottom: 4px; }
+    .loader-sub   { font-size: 13px; color: var(--muted); }
+
+    /* Success */
+    .success-wrap { display: none; width: 100%; }
+    .check-circle {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: #D1FAE5;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .check-circle svg { width: 22px; height: 22px; stroke: #059669; stroke-width: 2.5; fill: none; }
+    .success-title { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+    .success-sub   { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+
+    .pass-badge {
+      display: inline-block;
+      background: var(--navy);
+      color: #F5A623;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      padding: 9px 18px;
+      border-radius: 5px;
+      margin-bottom: 24px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .summary-card {
+      width: 100%;
+      background: var(--light);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .summary-card-head {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+    .summary-row:last-child { border-bottom: none; }
+    .sr-key { color: var(--muted); }
+    .sr-val { font-weight: 600; color: var(--text); }
+    .sr-val.green { color: #059669; }
+
+    /* Error state */
+    .error-wrap { display: none; width: 100%; }
+    .err-title { font-size: 18px; font-weight: 600; color: var(--red); margin-bottom: 8px; }
+    .err-msg   { font-size: 13px; color: var(--muted); background: #FEF2F2; border: 1px solid #FECACA; border-radius: 6px; padding: 12px 14px; margin-bottom: 20px; line-height: 1.6; text-align: left; }
+
+    @media (max-width: 480px) {
+      .page-body { padding: 22px 20px 28px; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- SCREEN 1: WELCOME -->
+  <div class="screen active" id="s-welcome">
+    <div class="accent-strip"></div>
+    <div class="top-bar">
+      <img src="gmr-logo.png" alt="GMR Aerocity" id="logo-welcome"
+           onerror="this.style.display='none';document.getElementById('logo-fallback-w').style.display='block'" />
+      <span id="logo-fallback-w" style="display:none;font-size:15px;font-weight:700;color:#1A3B6E;letter-spacing:1px">GMR AEROCITY</span>
+      <span class="top-bar-tag">Discount Pass</span>
+    </div>
+
+    <div class="page-body">
+      <div class="welcome-heading">Welcome to<br>GMR Aerocity</div>
+      <div class="welcome-sub">
+        Register your details and receive an exclusive discount pass on WhatsApp — valid today at 40+ stores.
+      </div>
+
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-lbl">Register</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-lbl">Get Pass</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-lbl">WhatsApp</div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-lbl">Save</div></div>
+      </div>
+
+      <div class="section-title">Our Partners</div>
+      <div class="store-grid">
+        <span class="store-tag">Costa Coffee</span>
+        <span class="store-tag">Burger King</span>
+        <span class="store-tag">Duty Free</span>
+        <span class="store-tag">The Body Shop</span>
+        <span class="store-tag">Cafe Central</span>
+        <span class="store-tag">Relay</span>
+        <span class="store-tag">+ 35 more</span>
+      </div>
+
+      <button class="btn-primary" onclick="show('s-form')">Get My Discount Pass</button>
+      <div class="foot-note">Free &nbsp;&middot;&nbsp; No account needed &nbsp;&middot;&nbsp; Valid today</div>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: FORM -->
+  <div class="screen" id="s-form">
+    <div class="accent-strip"></div>
+    <div class="top-bar">
+      <img src="gmr-logo.png" alt="GMR Aerocity"
+           onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span style=\'font-size:15px;font-weight:700;color:#1A3B6E\'>GMR AEROCITY</span>')" />
+      <span class="top-bar-tag">Step 1 of 1</span>
+    </div>
+
+    <div class="page-body">
+      <div class="form-title">Your Details</div>
+      <div class="form-sub">Takes under a minute. Your pass will arrive on WhatsApp.</div>
+
+      <div class="section-lbl">Personal</div>
+
+      <div class="field">
+        <label>Full Name</label>
+        <input id="f-name" type="text" placeholder="Arjun Sharma" autocomplete="name" />
+      </div>
+
+      <div class="field">
+        <label>Email Address</label>
+        <input id="f-email" type="email" placeholder="arjun@email.com" autocomplete="email" />
+      </div>
+
+      <div class="field">
+        <label>Phone Number</label>
+        <div class="phone-row">
+          <div class="phone-pre">+91</div>
+          <input id="f-phone" type="tel" placeholder="98765 43210" maxlength="10" autocomplete="tel" />
+        </div>
+      </div>
+
+      <div class="error-box" id="form-err"></div>
+
+      <button class="btn-primary" style="margin-top:8px" onclick="submitForm()">Send Pass to Email</button>
+      <button class="btn-secondary" onclick="show('s-welcome')">Back</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: RESULT -->
+  <div class="screen" id="s-result">
+    <div class="accent-strip"></div>
+    <div class="top-bar">
+      <img src="gmr-logo.png" alt="GMR Aerocity"
+           onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span style=\'font-size:15px;font-weight:700;color:#1A3B6E\'>GMR AEROCITY</span>')" />
+      <span class="top-bar-tag" id="result-tag">Sending...</span>
+    </div>
+
+    <div class="result-center">
+
+      <!-- Loading -->
+      <div class="loader" id="st-loading">
+        <div class="spin"></div>
+        <div class="loader-title">Checking you in</div>
+        <div class="loader-sub">Just a moment...</div>
+      </div>
+
+      <!-- Success -->
+      <div class="success-wrap" id="st-success">
+        <div class="check-circle">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="success-title">Pass Sent</div>
+        <div class="success-sub">Your discount pass has been sent to your email inbox.<br>Open it on your phone and show the QR at any store.</div>
+
+        <div class="pass-badge" id="r-pass-id">GMR-XXXXXX</div>
+
+        <div class="summary-card">
+          <div class="summary-card-head">Delivery Summary</div>
+          <div class="summary-row"><span class="sr-key">Sent to</span><span class="sr-val" id="r-email">—</span></div>
+          <div class="summary-row"><span class="sr-key">Pass ID</span><span class="sr-val" id="r-pid">—</span></div>
+          <div class="summary-row"><span class="sr-key">Status</span><span class="sr-val green">Delivered</span></div>
+          <div class="summary-row"><span class="sr-key">Valid until</span><span class="sr-val">End of today</span></div>
+        </div>
+
+        <button class="btn-primary" style="width:100%" onclick="downloadPass()">Download Pass</button>
+      </div>
+
+      <!-- Error -->
+      <div class="error-wrap" id="st-error">
+        <div class="err-title">Could not send pass</div>
+        <div class="err-msg" id="r-err-msg">Something went wrong.</div>
+        <button class="btn-primary" onclick="show('s-form')">Try Again</button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const API = window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
+
+  function show(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function setState(s) {
+    document.getElementById('st-loading').style.display = s === 'loading' ? 'block' : 'none';
+    document.getElementById('st-success').style.display = s === 'success' ? 'block' : 'none';
+    document.getElementById('st-error').style.display   = s === 'error'   ? 'block' : 'none';
+  }
+
+  function showErr(msg) {
+    const el = document.getElementById('form-err');
+    el.textContent = msg;
+    el.classList.add('show');
+  }
+  function clearErr() { document.getElementById('form-err').classList.remove('show'); }
+
+  let currentPassId = '';
+
+  async function submitForm() {
+    clearErr();
+    const name  = document.getElementById('f-name').value.trim();
+    const email = document.getElementById('f-email').value.trim();
+    const phone = document.getElementById('f-phone').value.trim();
+
+    if (!name)  return showErr('Please enter your full name.');
+    if (!email) return showErr('Please enter your email address.');
+    if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) return showErr('Please enter a valid email address.');
+    if (!phone || phone.length < 10) return showErr('Enter a valid 10-digit phone number.');
+
+    show('s-result');
+    document.getElementById('result-tag').textContent = 'Sending...';
+    setState('loading');
+
+    try {
+      const res  = await fetch(`${API}/send-pass`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || 'Unknown error');
+
+      currentPassId = data.passId;
+      document.getElementById('r-pass-id').textContent = data.passId;
+      document.getElementById('r-pid').textContent     = data.passId;
+      document.getElementById('r-email').textContent   = email;
+      document.getElementById('result-tag').textContent = 'Checked In';
+      setState('success');
+
+    } catch (err) {
+      document.getElementById('result-tag').textContent = 'Failed';
+      document.getElementById('r-err-msg').textContent  = err.message;
+      setState('error');
+    }
+  }
+
+  function downloadPass() {
+    if (!currentPassId) return;
+    const a = document.createElement('a');
+    a.href     = `${API}/passes/${currentPassId}.png`;
+    a.download = `GMR-Aerocity-Pass-${currentPassId}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+
+  function resetAndGoHome() {
+    ['f-name','f-email','f-phone'].forEach(id => document.getElementById(id).value = '');
+    clearErr();
+    show('s-welcome');
+  }
+
+  document.getElementById('f-date').valueAsDate = new Date();
+</script>
+</body>
+</html>

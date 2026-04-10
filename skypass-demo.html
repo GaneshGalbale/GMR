@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkyPass — Airport Rewards Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: #0b0f1a;
+      font-family: 'IBM Plex Sans', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    /* ── Screens ── */
+    .screen { display: none; animation: fadeUp 0.45s ease both; }
+    .screen.active { display: block; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Welcome ── */
+    .welcome-card {
+      background: #111827;
+      border: 1px solid #1e2d45;
+      border-radius: 20px;
+      padding: 40px 32px;
+      text-align: center;
+    }
+    .airport-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 46px;
+      color: #f0c040;
+      letter-spacing: 5px;
+      margin-bottom: 4px;
+    }
+    .tagline {
+      font-size: 11px;
+      color: #6b7a99;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 36px;
+    }
+    .scan-anim {
+      width: 76px; height: 76px;
+      border: 2px solid #f0c040;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 24px;
+      animation: pulse 2s ease-in-out infinite;
+      font-size: 30px;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(240,192,64,0.3); }
+      50%       { box-shadow: 0 0 0 14px rgba(240,192,64,0); }
+    }
+    .welcome-title { font-size: 22px; font-weight: 600; color: #eaf0ff; margin-bottom: 10px; }
+    .welcome-sub   { font-size: 13px; color: #6b7a99; line-height: 1.7; margin-bottom: 32px; }
+
+    .btn-primary {
+      width: 100%; padding: 14px;
+      background: #f0c040; color: #0b0f1a;
+      border: none; border-radius: 10px;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 15px; font-weight: 600;
+      cursor: pointer; letter-spacing: 0.5px;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-primary:hover { background: #f5ce5a; transform: translateY(-1px); }
+
+    .partner-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+    .partner-badge {
+      font-size: 10px; padding: 5px 12px;
+      border-radius: 20px; border: 1px solid #1e2d45;
+      color: #6b7a99; letter-spacing: 1px;
+    }
+
+    /* ── Form ── */
+    .form-card {
+      background: #111827;
+      border: 1px solid #1e2d45;
+      border-radius: 20px;
+      padding: 32px;
+    }
+    .form-step  { font-size: 10px; color: #f0c040; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 6px; }
+    .form-title { font-size: 20px; font-weight: 600; color: #eaf0ff; }
+    .form-sub   { font-size: 12px; color: #6b7a99; margin-top: 3px; margin-bottom: 22px; }
+
+    .form-grid     { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .form-grid.full{ grid-template-columns: 1fr; }
+
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label {
+      font-size: 11px; color: #6b7a99;
+      letter-spacing: 1.5px; text-transform: uppercase;
+    }
+    .field input, .field select {
+      background: #0b0f1a;
+      border: 1px solid #1e2d45;
+      border-radius: 8px;
+      padding: 11px 13px;
+      color: #eaf0ff;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      appearance: none;
+    }
+    .field input:focus, .field select:focus { border-color: #f0c040; }
+    .field select option { background: #111827; }
+
+    .btn-row { display: flex; gap: 10px; margin-top: 20px; }
+    .btn-back {
+      background: transparent; border: 1px solid #1e2d45;
+      color: #6b7a99; padding: 14px; border-radius: 10px;
+      font-family: 'IBM Plex Sans', sans-serif; font-size: 14px;
+      cursor: pointer; transition: all 0.2s; flex: 1;
+    }
+    .btn-back:hover { border-color: #6b7a99; color: #eaf0ff; }
+    .btn-row .btn-primary { flex: 2; }
+
+    /* ── Boarding Pass ── */
+    .success-header { text-align: center; margin-bottom: 20px; }
+    .success-icon {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: #f0c04022; border: 1px solid #f0c04055;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 12px; font-size: 22px; color: #f0c040;
+    }
+    .success-title { font-size: 19px; font-weight: 600; color: #eaf0ff; margin-bottom: 4px; }
+    .success-sub   { font-size: 12px; color: #6b7a99; }
+
+    .pass {
+      background: #0f1928;
+      border: 1px solid #f0c040;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .pass-top { padding: 24px 24px 0; }
+
+    .pass-airline { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .pass-airline-name { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: #f0c040; letter-spacing: 3px; }
+    .pass-type { font-size: 10px; color: #6b7a99; letter-spacing: 2px; text-transform: uppercase; text-align: right; }
+    .pass-type span { color: #f0c040; font-size: 11px; display: block; margin-top: 3px; }
+
+    .pass-route { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .pass-city  { text-align: center; }
+    .pass-code  { font-family: 'Bebas Neue', sans-serif; font-size: 54px; color: #eaf0ff; letter-spacing: 2px; line-height: 1; }
+    .pass-city-name { font-size: 11px; color: #6b7a99; letter-spacing: 1px; margin-top: 2px; }
+
+    .pass-arrow { flex: 1; text-align: center; padding: 0 12px; }
+    .pass-arrow-line {
+      height: 1px;
+      background: repeating-linear-gradient(90deg,#f0c040 0,#f0c040 6px,transparent 6px,transparent 12px);
+      margin-bottom: 4px;
+    }
+    .pass-arrow-icon  { font-size: 20px; color: #f0c040; }
+    .pass-arrow-label { font-size: 9px; color: #6b7a99; letter-spacing: 2px; }
+
+    .pass-details { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .pass-detail-label { font-size: 9px; color: #6b7a99; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 3px; }
+    .pass-detail-val   { font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #eaf0ff; font-weight: 600; }
+
+    .pass-name-row {
+      background: #0b0f1a;
+      border-top: 1px dashed #1e2d45;
+      padding: 14px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .pass-pax-label { font-size: 9px; color: #6b7a99; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 3px; }
+    .pass-pax-name  { font-family: 'IBM Plex Mono', monospace; font-size: 15px; color: #eaf0ff; font-weight: 600; }
+
+    .pass-tear { height: 1px; background: repeating-linear-gradient(90deg,#1e2d45 0,#1e2d45 8px,transparent 8px,transparent 16px); margin: 0 24px; }
+
+    .pass-bottom { padding: 16px 24px 20px; display: flex; align-items: center; gap: 20px; }
+    .qr-wrap { background: #fff; padding: 8px; border-radius: 8px; flex-shrink: 0; }
+
+    .pass-bottom-info { flex: 1; }
+    .pass-discount-badge {
+      background: rgba(240,192,64,0.08);
+      border: 1px solid rgba(240,192,64,0.3);
+      border-radius: 8px; padding: 8px 12px; margin-bottom: 8px;
+    }
+    .pass-discount-title { font-size: 10px; color: #f0c040; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2px; }
+    .pass-discount-sub   { font-size: 12px; color: #9aabcc; line-height: 1.4; }
+    .pass-id { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #3a4d66; letter-spacing: 1px; }
+
+    .barcode-row { padding: 0 24px 20px; display: flex; gap: 2px; align-items: flex-end; height: 44px; }
+    .bar { background: #eaf0ff; border-radius: 1px; }
+
+    .store-row { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+    .store-chip {
+      font-size: 11px; padding: 5px 12px;
+      border-radius: 20px; background: #111827;
+      border: 1px solid #1e2d45; color: #9aabcc;
+    }
+
+    .btn-ghost {
+      width: 100%; padding: 12px;
+      background: transparent; border: 1px solid #1e2d45;
+      color: #6b7a99; border-radius: 10px;
+      font-family: 'IBM Plex Sans', sans-serif; font-size: 13px;
+      cursor: pointer; margin-top: 12px; transition: all 0.2s;
+    }
+    .btn-ghost:hover { border-color: #f0c040; color: #f0c040; }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      body { padding: 16px; }
+      .welcome-card, .form-card { padding: 28px 20px; }
+      .pass-top { padding: 20px 16px 0; }
+      .pass-name-row { padding: 12px 16px; }
+      .pass-bottom { padding: 12px 16px 16px; gap: 14px; }
+      .barcode-row { padding: 0 16px 16px; }
+      .pass-code { font-size: 42px; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ── SCREEN 1: WELCOME ── -->
+  <div class="screen active" id="s-welcome">
+    <div class="welcome-card">
+      <div class="airport-logo">SKYPASS</div>
+      <div class="tagline">Airport Rewards Program</div>
+      <div class="scan-anim">✦</div>
+      <div class="welcome-title">Welcome, Traveller</div>
+      <div class="welcome-sub">
+        You've scanned the SkyPass QR code. Register in 60 seconds to unlock exclusive discounts at 40+ airport stores &amp; cafés — valid for today's journey only.
+      </div>
+      <button class="btn-primary" onclick="show('s-form')">Get Started →</button>
+      <div class="partner-row">
+        <span class="partner-badge">CAFÉS</span>
+        <span class="partner-badge">DUTY FREE</span>
+        <span class="partner-badge">LOUNGES</span>
+        <span class="partner-badge">RETAIL</span>
+        <span class="partner-badge">DINING</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 2: FORM ── -->
+  <div class="screen" id="s-form">
+    <div class="form-card">
+      <div class="form-step">Registration</div>
+      <div class="form-title">Your Travel Details</div>
+      <div class="form-sub">Takes less than a minute. No account needed.</div>
+
+      <div class="form-grid full">
+        <div class="field">
+          <label>Full Name</label>
+          <input id="f-name" type="text" placeholder="e.g. Arjun Sharma" />
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label>Flight No.</label>
+          <input id="f-flight" type="text" placeholder="AI 202" />
+        </div>
+        <div class="field">
+          <label>Travel Date</label>
+          <input id="f-date" type="date" />
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label>From</label>
+          <select id="f-from">
+            <option value="">Select Origin</option>
+            <option value="DEL|Delhi">DEL — Delhi</option>
+            <option value="BOM|Mumbai">BOM — Mumbai</option>
+            <option value="BLR|Bengaluru">BLR — Bengaluru</option>
+            <option value="MAA|Chennai">MAA — Chennai</option>
+            <option value="HYD|Hyderabad">HYD — Hyderabad</option>
+            <option value="CCU|Kolkata">CCU — Kolkata</option>
+            <option value="AMD|Ahmedabad">AMD — Ahmedabad</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>To</label>
+          <select id="f-to">
+            <option value="">Select Destination</option>
+            <option value="DXB|Dubai">DXB — Dubai</option>
+            <option value="SIN|Singapore">SIN — Singapore</option>
+            <option value="LHR|London">LHR — London</option>
+            <option value="JFK|New York">JFK — New York</option>
+            <option value="CDG|Paris">CDG — Paris</option>
+            <option value="NRT|Tokyo">NRT — Tokyo</option>
+            <option value="BKK|Bangkok">BKK — Bangkok</option>
+            <option value="SYD|Sydney">SYD — Sydney</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label>Seat No.</label>
+          <input id="f-seat" type="text" placeholder="14A" maxlength="4" />
+        </div>
+        <div class="field">
+          <label>Class</label>
+          <select id="f-class">
+            <option>Economy</option>
+            <option>Business</option>
+            <option>First</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid full" style="margin-top:4px">
+        <div class="field">
+          <label>Mobile Number (optional)</label>
+          <input id="f-phone" type="tel" placeholder="+91 98765 43210" />
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-back" onclick="show('s-welcome')">← Back</button>
+        <button class="btn-primary" onclick="generatePass()">Generate My Pass ✦</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 3: BOARDING PASS ── -->
+  <div class="screen" id="s-pass">
+    <div class="success-header">
+      <div class="success-icon">✓</div>
+      <div class="success-title">Your SkyPass is Ready!</div>
+      <div class="success-sub">Show QR at any partner store to avail your discount</div>
+    </div>
+
+    <div class="pass">
+      <div class="pass-top">
+        <div class="pass-airline">
+          <div class="pass-airline-name">SKYPASS</div>
+          <div class="pass-type">
+            REWARDS PASS
+            <span id="p-class">ECONOMY</span>
+          </div>
+        </div>
+
+        <div class="pass-route">
+          <div class="pass-city">
+            <div class="pass-code" id="p-from-code">DEL</div>
+            <div class="pass-city-name" id="p-from-city">Delhi</div>
+          </div>
+          <div class="pass-arrow">
+            <div class="pass-arrow-line"></div>
+            <div class="pass-arrow-icon">✈</div>
+            <div class="pass-arrow-label">NON-STOP</div>
+          </div>
+          <div class="pass-city">
+            <div class="pass-code" id="p-to-code">DXB</div>
+            <div class="pass-city-name" id="p-to-city">Dubai</div>
+          </div>
+        </div>
+
+        <div class="pass-details">
+          <div>
+            <div class="pass-detail-label">Flight</div>
+            <div class="pass-detail-val" id="p-flight">AI 202</div>
+          </div>
+          <div>
+            <div class="pass-detail-label">Date</div>
+            <div class="pass-detail-val" id="p-date">10 APR</div>
+          </div>
+          <div>
+            <div class="pass-detail-label">Seat</div>
+            <div class="pass-detail-val" id="p-seat">14A</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pass-name-row">
+        <div>
+          <div class="pass-pax-label">Passenger</div>
+          <div class="pass-pax-name" id="p-name">ARJUN SHARMA</div>
+        </div>
+        <div style="text-align:right">
+          <div class="pass-pax-label">Pass ID</div>
+          <div class="pass-pax-name" id="p-id">SKY-000000</div>
+        </div>
+      </div>
+
+      <div class="pass-tear"></div>
+
+      <div class="pass-bottom">
+        <div class="qr-wrap" id="qr-container"></div>
+        <div class="pass-bottom-info">
+          <div class="pass-discount-badge">
+            <div class="pass-discount-title">✦ Discount Unlocked</div>
+            <div class="pass-discount-sub">Show QR at partner stores for up to 20% off today</div>
+          </div>
+          <div class="pass-id" id="p-barcode-text">SKY-XXXX · VALID TODAY ONLY</div>
+        </div>
+      </div>
+
+      <div class="barcode-row" id="barcode"></div>
+    </div>
+
+    <div class="store-row">
+      <span class="store-chip">☕ Costa Coffee</span>
+      <span class="store-chip">🛍 Relay</span>
+      <span class="store-chip">🍔 Burger King</span>
+      <span class="store-chip">🧴 The Body Shop</span>
+      <span class="store-chip">🥐 Café Central</span>
+    </div>
+
+    <button class="btn-ghost" onclick="show('s-welcome')">← Register another passenger</button>
+  </div>
+
+</div>
+
+<script>
+  function show(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function randId() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let r = 'SKY-';
+    for (let i = 0; i < 6; i++) r += chars[Math.floor(Math.random() * chars.length)];
+    return r;
+  }
+
+  function generatePass() {
+    const name    = document.getElementById('f-name').value.trim();
+    const flight  = document.getElementById('f-flight').value.trim() || 'XX 000';
+    const dateVal = document.getElementById('f-date').value;
+    const fromVal = document.getElementById('f-from').value;
+    const toVal   = document.getElementById('f-to').value;
+    const seat    = document.getElementById('f-seat').value.trim() || '--';
+    const cls     = document.getElementById('f-class').value;
+
+    if (!name || !fromVal || !toVal) {
+      alert('Please fill in Name, Origin and Destination.');
+      return;
+    }
+
+    const [fromCode, fromCity] = fromVal.split('|');
+    const [toCode,   toCity  ] = toVal.split('|');
+
+    let dateStr = '--';
+    if (dateVal) {
+      const d = new Date(dateVal);
+      const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+      dateStr = pad(d.getDate()) + ' ' + months[d.getMonth()];
+    }
+
+    const passId = randId();
+    const qrData = [passId, name.toUpperCase(), flight.toUpperCase(), fromCode, toCode, dateStr].join('|');
+
+    // Fill pass fields
+    document.getElementById('p-name').textContent      = name.toUpperCase();
+    document.getElementById('p-flight').textContent    = flight.toUpperCase();
+    document.getElementById('p-date').textContent      = dateStr;
+    document.getElementById('p-seat').textContent      = seat.toUpperCase();
+    document.getElementById('p-class').textContent     = cls.toUpperCase();
+    document.getElementById('p-from-code').textContent = fromCode;
+    document.getElementById('p-from-city').textContent = fromCity;
+    document.getElementById('p-to-code').textContent   = toCode;
+    document.getElementById('p-to-city').textContent   = toCity;
+    document.getElementById('p-id').textContent        = passId;
+    document.getElementById('p-barcode-text').textContent = passId + ' · VALID TODAY ONLY';
+
+    // Generate QR Code
+    const qrContainer = document.getElementById('qr-container');
+    qrContainer.innerHTML = '';
+    new QRCode(qrContainer, {
+      text: qrData,
+      width: 84, height: 84,
+      colorDark: '#0b0f1a',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+
+    // Generate decorative barcode
+    const bc   = document.getElementById('barcode');
+    bc.innerHTML = '';
+    const seed = passId.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+    for (let i = 0; i < 52; i++) {
+      const h = 10 + ((seed * 7 + i * 13) % 28);
+      const w = i % 3 === 0 ? 3 : i % 5 === 0 ? 1 : 2;
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      bar.style.cssText = `height:${h}px;width:${w}px;flex-shrink:0`;
+      bc.appendChild(bar);
+    }
+
+    show('s-pass');
+  }
+
+  // Set today's date as default
+  document.getElementById('f-date').valueAsDate = new Date();
+</script>
+</body>
+</html>
