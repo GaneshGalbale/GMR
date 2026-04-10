@@ -3,3 +3,4 @@ passes/
 .env
 *.log
 .DS_Store
+.cache/
