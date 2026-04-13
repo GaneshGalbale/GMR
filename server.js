@@ -1,26 +1,13 @@
 require('dotenv').config();
-const express    = require('express');
-const cors       = require('cors');
-const path       = require('path');
-const fs         = require('fs');
-const puppeteer  = require('puppeteer');
-const QRCode     = require('qrcode');
-const nodemailer = require('nodemailer');
-const dns        = require('dns');
+const express   = require('express');
+const cors      = require('cors');
+const path      = require('path');
+const fs        = require('fs');
+const puppeteer = require('puppeteer');
+const QRCode    = require('qrcode');
 
-// Force IPv4 globally to dodge the IPv6 (ENETUNREACH) bug that started today
-if (dns.setDefaultResultOrder) {
-  dns.setDefaultResultOrder('ipv4first');
-}
-
-// ── Gmail SMTP transporter ────────────────────────────────────────────────
-const transporter = nodemailer.createTransport({
-  service: 'gmail', // This automatically uses port 465 (secure: true)
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD
-  }
-});
+// ── Google Apps Script Webhook URL ─────────────────────────────────────────
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwG2D9iHVvOjNEI0Z5kWMev6Y50PF1_wIHoVMcI-l_0xBa6oyeYPdyRNCRDqeiYe_fV/exec';
 
 const app = express();
 app.use(cors());
@@ -304,19 +291,25 @@ body{margin:0;padding:0;background:#F4F5F7;font-family:Arial,sans-serif}
 
 // ── Send email ─────────────────────────────────────────────────────────────
 async function sendPassEmail({ toEmail, name, passId, phone, imagePath }) {
-  const passImgUrl = `https://gmr-4a30.onrender.com/passes/${passId}.png`;
+  const imageBase64 = fs.readFileSync(imagePath).toString('base64');
+  const passImgUrl  = `https://gmr-4a30.onrender.com/passes/${passId}.png`;
 
-  await transporter.sendMail({
-    from:    `"GMR Aerocity" <${process.env.GMAIL_USER}>`,
-    to:      toEmail,
-    subject: `Your GMR Aerocity Boarding Pass — ${passId}`,
-    html:    buildEmailHTML({ name, passId, email: toEmail, phone, passImgUrl }),
-    attachments: [{
-      filename: `GMR-Pass-${passId}.png`,
-      path:     imagePath,
-      cid:      'boardingpass'
-    }]
+  const payload = {
+    to:        toEmail,
+    subject:   `Your GMR Aerocity Boarding Pass — ${passId}`,
+    html:      buildEmailHTML({ name, passId, email: toEmail, phone, passImgUrl }),
+    imgBase64: imageBase64,
+    imgName:   `GMR-Pass-${passId}.png`
+  };
+
+  const response = await fetch(GAS_URL, {
+    method: 'POST',
+    body: JSON.stringify(payload)
   });
+
+  if (!response.ok) {
+    throw new Error(`Google Apps Script responded with status: ${response.status}`);
+  }
 }
 
 // ── Routes ─────────────────────────────────────────────────────────────────
@@ -363,6 +356,5 @@ app.post('/send-pass', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`\nGMR Aerocity Pass Server → http://localhost:${PORT}`);
-  if (!process.env.GMAIL_USER) console.warn('WARNING: GMAIL_USER missing in .env');
-  else console.log(`Gmail: ${process.env.GMAIL_USER}\n`);
+  console.log(`Using Google Apps Script Webhook for emails.\n`);
 });
