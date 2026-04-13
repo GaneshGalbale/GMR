@@ -26,12 +26,16 @@ app.use('/passes', express.static(passesDir));
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'gmr-aerocity-pass.html')));
 
 // ── Gmail ──────────────────────────────────────────────────────────────────
+// Custom lookup forces IPv4 — Render free tier has no IPv6 egress and
+// the top-level `family:4` option is not respected by all nodemailer versions.
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 587,
-  secure: false, // upgrade later with STARTTLS
+  secure: false,
   requireTLS: true,
-  family: 4,     // force IPv4 — Render free tier has no IPv6 egress
+  lookup: (hostname, options, callback) => {
+    dns.lookup(hostname, { family: 4 }, callback);
+  },
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_APP_PASSWORD
