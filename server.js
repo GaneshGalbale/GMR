@@ -1,17 +1,13 @@
 require('dotenv').config();
-const express    = require('express');
-const cors       = require('cors');
-const path       = require('path');
-const fs         = require('fs');
-const puppeteer  = require('puppeteer');
-const QRCode     = require('qrcode');
-const nodemailer = require('nodemailer');
-const dns        = require('dns');
+const express   = require('express');
+const cors      = require('cors');
+const path      = require('path');
+const fs        = require('fs');
+const puppeteer = require('puppeteer');
+const QRCode    = require('qrcode');
+const { Resend } = require('resend');
 
-// Force IPv4-first resolution to prevent IPv6 ENETUNREACH errors on Render
-if (dns.setDefaultResultOrder) {
-  dns.setDefaultResultOrder('ipv4first');
-}
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const app = express();
 app.use(cors());
@@ -24,23 +20,6 @@ if (!fs.existsSync(passesDir)) fs.mkdirSync(passesDir, { recursive: true });
 app.use(express.static(path.join(__dirname)));
 app.use('/passes', express.static(passesDir));
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'gmr-aerocity-pass.html')));
-
-// ── Gmail ──────────────────────────────────────────────────────────────────
-// Custom lookup forces IPv4 — Render free tier has no IPv6 egress and
-// the top-level `family:4` option is not respected by all nodemailer versions.
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
-  requireTLS: true,
-  lookup: (hostname, options, callback) => {
-    dns.lookup(hostname, { family: 4 }, callback);
-  },
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD
-  }
-});
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 function generatePassId() {
@@ -225,7 +204,7 @@ async function generatePassImage(passData) {
 }
 
 // ── Email HTML ─────────────────────────────────────────────────────────────
-function buildEmailHTML({ name, passId, email, phone }) {
+function buildEmailHTML({ name, passId, email, phone, passImgBase64 }) {
   return `<!DOCTYPE html>
 <html><head><meta charset="UTF-8">
 <style>
@@ -271,7 +250,7 @@ body{margin:0;padding:0;background:#F4F5F7;font-family:Arial,sans-serif}
     <div class="greeting">Hi ${name},</div>
     <div class="sub">Your GMR Aerocity boarding pass is ready show the pass (or scan the QR code) at the billing counter of any partner store to avail your discount</div>
 
-    <img src="cid:boardingpass" alt="GMR Aerocity Pass" class="pass-img" />
+    <img src="${passImgBase64}" alt="GMR Aerocity Pass" class="pass-img" />
 
     <div class="card">
       <div class="card-head">Pass Details</div>
@@ -312,17 +291,21 @@ body{margin:0;padding:0;background:#F4F5F7;font-family:Arial,sans-serif}
 
 // ── Send email ─────────────────────────────────────────────────────────────
 async function sendPassEmail({ toEmail, name, passId, phone, imagePath }) {
-  await transporter.sendMail({
-    from:    `"GMR Aerocity" <${process.env.GMAIL_USER}>`,
-    to:      toEmail,
+  const imageBuffer    = fs.readFileSync(imagePath);
+  const passImgBase64  = `data:image/png;base64,${imageBuffer.toString('base64')}`;
+
+  const { error } = await resend.emails.send({
+    from:    'GMR Aerocity <onboarding@resend.dev>',
+    to:      [toEmail],
     subject: `Your GMR Aerocity Boarding Pass — ${passId}`,
-    html:    buildEmailHTML({ name, passId, email: toEmail, phone }),
+    html:    buildEmailHTML({ name, passId, email: toEmail, phone, passImgBase64 }),
     attachments: [{
       filename: `GMR-Pass-${passId}.png`,
-      path:     imagePath,
-      cid:      'boardingpass'
+      content:  imageBuffer.toString('base64'),
     }]
   });
+
+  if (error) throw new Error(error.message);
 }
 
 // ── Routes ─────────────────────────────────────────────────────────────────
