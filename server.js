@@ -6,6 +6,12 @@ const fs         = require('fs');
 const puppeteer  = require('puppeteer');
 const QRCode     = require('qrcode');
 const nodemailer = require('nodemailer');
+const dns        = require('dns');
+
+// Force IPv4-first resolution to prevent IPv6 ENETUNREACH errors on Render
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 
 const app = express();
 app.use(cors());
