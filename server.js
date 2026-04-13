@@ -1,13 +1,23 @@
 require('dotenv').config();
-const express   = require('express');
-const cors      = require('cors');
-const path      = require('path');
-const fs        = require('fs');
-const puppeteer = require('puppeteer');
-const QRCode    = require('qrcode');
-const { Resend } = require('resend');
+const express    = require('express');
+const cors       = require('cors');
+const path       = require('path');
+const fs         = require('fs');
+const puppeteer  = require('puppeteer');
+const QRCode     = require('qrcode');
+const nodemailer = require('nodemailer');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// ── Brevo (Sendinblue) SMTP transporter ────────────────────────────────────
+// Brevo port 587 is IPv4 only, no domain verification required.
+const transporter = nodemailer.createTransport({
+  host: 'smtp-relay.brevo.com',
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.BREVO_USER,       // your Brevo account email
+    pass: process.env.BREVO_SMTP_KEY    // SMTP key from Brevo dashboard
+  }
+});
 
 const app = express();
 app.use(cors());
@@ -204,7 +214,7 @@ async function generatePassImage(passData) {
 }
 
 // ── Email HTML ─────────────────────────────────────────────────────────────
-function buildEmailHTML({ name, passId, email, phone, passImgBase64 }) {
+function buildEmailHTML({ name, passId, email, phone }) {
   return `<!DOCTYPE html>
 <html><head><meta charset="UTF-8">
 <style>
@@ -250,7 +260,7 @@ body{margin:0;padding:0;background:#F4F5F7;font-family:Arial,sans-serif}
     <div class="greeting">Hi ${name},</div>
     <div class="sub">Your GMR Aerocity boarding pass is ready show the pass (or scan the QR code) at the billing counter of any partner store to avail your discount</div>
 
-    <img src="${passImgBase64}" alt="GMR Aerocity Pass" class="pass-img" />
+    <img src="cid:boardingpass" alt="GMR Aerocity Pass" class="pass-img" />
 
     <div class="card">
       <div class="card-head">Pass Details</div>
@@ -291,21 +301,17 @@ body{margin:0;padding:0;background:#F4F5F7;font-family:Arial,sans-serif}
 
 // ── Send email ─────────────────────────────────────────────────────────────
 async function sendPassEmail({ toEmail, name, passId, phone, imagePath }) {
-  const imageBuffer    = fs.readFileSync(imagePath);
-  const passImgBase64  = `data:image/png;base64,${imageBuffer.toString('base64')}`;
-
-  const { error } = await resend.emails.send({
-    from:    'GMR Aerocity <onboarding@resend.dev>',
-    to:      [toEmail],
+  await transporter.sendMail({
+    from:    `"GMR Aerocity" <${process.env.BREVO_USER}>`,
+    to:      toEmail,
     subject: `Your GMR Aerocity Boarding Pass — ${passId}`,
-    html:    buildEmailHTML({ name, passId, email: toEmail, phone, passImgBase64 }),
+    html:    buildEmailHTML({ name, passId, email: toEmail, phone }),
     attachments: [{
       filename: `GMR-Pass-${passId}.png`,
-      content:  imageBuffer.toString('base64'),
+      path:     imagePath,
+      cid:      'boardingpass'
     }]
   });
-
-  if (error) throw new Error(error.message);
 }
 
 // ── Routes ─────────────────────────────────────────────────────────────────
