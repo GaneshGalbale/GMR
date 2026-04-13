@@ -1,23 +1,38 @@
 require('dotenv').config();
-const express    = require('express');
-const cors       = require('cors');
-const path       = require('path');
-const fs         = require('fs');
-const puppeteer  = require('puppeteer');
-const QRCode     = require('qrcode');
-const nodemailer = require('nodemailer');
+const express   = require('express');
+const cors      = require('cors');
+const path      = require('path');
+const fs        = require('fs');
+const https     = require('https');
+const puppeteer = require('puppeteer');
+const QRCode    = require('qrcode');
 
-// ── Brevo (Sendinblue) SMTP transporter ────────────────────────────────────
-// Brevo port 587 is IPv4 only, no domain verification required.
-const transporter = nodemailer.createTransport({
-  host: 'smtp-relay.brevo.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.BREVO_USER,       // your Brevo account email
-    pass: process.env.BREVO_SMTP_KEY    // SMTP key from Brevo dashboard
-  }
-});
+// ── Brevo HTTP API helper (port 443 — never blocked) ──────────────────────
+function brevoSend(payload) {
+  return new Promise((resolve, reject) => {
+    const body = JSON.stringify(payload);
+    const req  = https.request({
+      hostname: 'api.brevo.com',
+      path:     '/v3/smtp/email',
+      method:   'POST',
+      headers:  {
+        'Content-Type':  'application/json',
+        'Content-Length': Buffer.byteLength(body),
+        'api-key':        process.env.BREVO_API_KEY
+      }
+    }, res => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) resolve(JSON.parse(data));
+        else reject(new Error(`Brevo API error ${res.statusCode}: ${data}`));
+      });
+    });
+    req.on('error', reject);
+    req.write(body);
+    req.end();
+  });
+}
 
 const app = express();
 app.use(cors());
@@ -301,15 +316,16 @@ body{margin:0;padding:0;background:#F4F5F7;font-family:Arial,sans-serif}
 
 // ── Send email ─────────────────────────────────────────────────────────────
 async function sendPassEmail({ toEmail, name, passId, phone, imagePath }) {
-  await transporter.sendMail({
-    from:    `"GMR Aerocity" <${process.env.BREVO_USER}>`,
-    to:      toEmail,
-    subject: `Your GMR Aerocity Boarding Pass — ${passId}`,
-    html:    buildEmailHTML({ name, passId, email: toEmail, phone }),
-    attachments: [{
-      filename: `GMR-Pass-${passId}.png`,
-      path:     imagePath,
-      cid:      'boardingpass'
+  const imageBase64 = fs.readFileSync(imagePath).toString('base64');
+
+  await brevoSend({
+    sender:      { name: 'GMR Aerocity', email: process.env.BREVO_SENDER_EMAIL },
+    to:          [{ email: toEmail, name }],
+    subject:     `Your GMR Aerocity Boarding Pass — ${passId}`,
+    htmlContent: buildEmailHTML({ name, passId, email: toEmail, phone }),
+    attachment:  [{
+      name:    `GMR-Pass-${passId}.png`,
+      content: imageBase64
     }]
   });
 }
