@@ -1,38 +1,26 @@
 require('dotenv').config();
-const express   = require('express');
-const cors      = require('cors');
-const path      = require('path');
-const fs        = require('fs');
-const https     = require('https');
-const puppeteer = require('puppeteer');
-const QRCode    = require('qrcode');
+const express    = require('express');
+const cors       = require('cors');
+const path       = require('path');
+const fs         = require('fs');
+const puppeteer  = require('puppeteer');
+const QRCode     = require('qrcode');
+const nodemailer = require('nodemailer');
+const dns        = require('dns');
 
-// ── Brevo HTTP API helper (port 443 — never blocked) ──────────────────────
-function brevoSend(payload) {
-  return new Promise((resolve, reject) => {
-    const body = JSON.stringify(payload);
-    const req  = https.request({
-      hostname: 'api.brevo.com',
-      path:     '/v3/smtp/email',
-      method:   'POST',
-      headers:  {
-        'Content-Type':  'application/json',
-        'Content-Length': Buffer.byteLength(body),
-        'api-key':        process.env.BREVO_API_KEY
-      }
-    }, res => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        if (res.statusCode >= 200 && res.statusCode < 300) resolve(JSON.parse(data));
-        else reject(new Error(`Brevo API error ${res.statusCode}: ${data}`));
-      });
-    });
-    req.on('error', reject);
-    req.write(body);
-    req.end();
-  });
+// Force IPv4 globally to dodge the IPv6 (ENETUNREACH) bug that started today
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
 }
+
+// ── Gmail SMTP transporter ────────────────────────────────────────────────
+const transporter = nodemailer.createTransport({
+  service: 'gmail', // This automatically uses port 465 (secure: true)
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD
+  }
+});
 
 const app = express();
 app.use(cors());
@@ -316,17 +304,17 @@ body{margin:0;padding:0;background:#F4F5F7;font-family:Arial,sans-serif}
 
 // ── Send email ─────────────────────────────────────────────────────────────
 async function sendPassEmail({ toEmail, name, passId, phone, imagePath }) {
-  const imageBase64 = fs.readFileSync(imagePath).toString('base64');
-  const passImgUrl  = `https://gmr-4a30.onrender.com/passes/${passId}.png`;
+  const passImgUrl = `https://gmr-4a30.onrender.com/passes/${passId}.png`;
 
-  await brevoSend({
-    sender:      { name: 'GMR Aerocity', email: process.env.BREVO_SENDER_EMAIL },
-    to:          [{ email: toEmail, name }],
-    subject:     `Your GMR Aerocity Boarding Pass — ${passId}`,
-    htmlContent: buildEmailHTML({ name, passId, email: toEmail, phone, passImgUrl }),
-    attachment:  [{
-      name:    `GMR-Pass-${passId}.png`,
-      content: imageBase64
+  await transporter.sendMail({
+    from:    `"GMR Aerocity" <${process.env.GMAIL_USER}>`,
+    to:      toEmail,
+    subject: `Your GMR Aerocity Boarding Pass — ${passId}`,
+    html:    buildEmailHTML({ name, passId, email: toEmail, phone, passImgUrl }),
+    attachments: [{
+      filename: `GMR-Pass-${passId}.png`,
+      path:     imagePath,
+      cid:      'boardingpass'
     }]
   });
 }
@@ -375,6 +363,6 @@ app.post('/send-pass', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`\nGMR Aerocity Pass Server → http://localhost:${PORT}`);
-  if (!process.env.BREVO_SENDER_EMAIL) console.warn('WARNING: BREVO_SENDER_EMAIL missing in .env');
-  else console.log(`Brevo Sender: ${process.env.BREVO_SENDER_EMAIL}\n`);
+  if (!process.env.GMAIL_USER) console.warn('WARNING: GMAIL_USER missing in .env');
+  else console.log(`Gmail: ${process.env.GMAIL_USER}\n`);
 });
