@@ -229,7 +229,7 @@ async function generatePassImage(passData) {
 }
 
 // ── Email HTML ─────────────────────────────────────────────────────────────
-function buildEmailHTML({ name, passId, email, phone }) {
+function buildEmailHTML({ name, passId, email, phone, passImgUrl }) {
   return `<!DOCTYPE html>
 <html><head><meta charset="UTF-8">
 <style>
@@ -275,7 +275,7 @@ body{margin:0;padding:0;background:#F4F5F7;font-family:Arial,sans-serif}
     <div class="greeting">Hi ${name},</div>
     <div class="sub">Your GMR Aerocity boarding pass is ready show the pass (or scan the QR code) at the billing counter of any partner store to avail your discount</div>
 
-    <img src="cid:boardingpass" alt="GMR Aerocity Pass" class="pass-img" />
+    <img src="${passImgUrl}" alt="GMR Aerocity Pass" class="pass-img" />
 
     <div class="card">
       <div class="card-head">Pass Details</div>
@@ -317,12 +317,13 @@ body{margin:0;padding:0;background:#F4F5F7;font-family:Arial,sans-serif}
 // ── Send email ─────────────────────────────────────────────────────────────
 async function sendPassEmail({ toEmail, name, passId, phone, imagePath }) {
   const imageBase64 = fs.readFileSync(imagePath).toString('base64');
+  const passImgUrl  = `https://gmr-4a30.onrender.com/passes/${passId}.png`;
 
   await brevoSend({
     sender:      { name: 'GMR Aerocity', email: process.env.BREVO_SENDER_EMAIL },
     to:          [{ email: toEmail, name }],
     subject:     `Your GMR Aerocity Boarding Pass — ${passId}`,
-    htmlContent: buildEmailHTML({ name, passId, email: toEmail, phone }),
+    htmlContent: buildEmailHTML({ name, passId, email: toEmail, phone, passImgUrl }),
     attachment:  [{
       name:    `GMR-Pass-${passId}.png`,
       content: imageBase64
