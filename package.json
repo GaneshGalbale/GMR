@@ -1,7 +1,7 @@
 {
   "name": "gmr-aerocity-pass",
   "version": "1.0.0",
-  "description": "GMR Aerocity Discount Pass System — WhatsApp delivery via Twilio",
+  "description": "GMR Aerocity — AeroBuzz Boarding Pass System",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

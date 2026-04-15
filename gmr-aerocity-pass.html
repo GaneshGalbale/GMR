@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GMR Aerocity — Discount Pass</title>
+  <title>GMR Aerocity — AeroBuzz Boarding Pass</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
@@ -380,16 +380,16 @@
       <img src="gmr-logo.png" alt="GMR Aerocity" id="logo-welcome"
            onerror="this.style.display='none';document.getElementById('logo-fallback-w').style.display='block'" />
       <span id="logo-fallback-w" style="display:none;font-size:15px;font-weight:700;color:#1A3B6E;letter-spacing:1px">GMR AEROCITY</span>
-      <span class="top-bar-tag">Boarding Pass</span>
+      <span class="top-bar-tag">AeroBuzz Boarding Pass</span>
     </div>
 
     <div class="page-body">
       <div class="welcome-heading">Welcome to<br>GMR Aerocity</div>
-      <div class="welcome-sub">Enter your details and receive an exclusive boarding pass on your e-mail valid at our partner stores</div>
+      <div class="welcome-sub">Enter your details and receive your AeroBuzz Boarding Pass on your e-mail valid at our partner stores</div>
 
       <div class="steps">
         <div class="step"><div class="step-num">1</div><div class="step-lbl">Register</div></div>
-        <div class="step"><div class="step-num">2</div><div class="step-lbl">Get your pass</div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-lbl">Get your AeroBuzz Boarding Pass</div></div>
         <div class="step"><div class="step-num">3</div><div class="step-lbl">Avail Discounts</div></div>
       </div>
 
@@ -403,7 +403,7 @@
         <div class="store-logo store-more">and<br>more</div>
       </div>
 
-      <button class="btn-primary" onclick="show('s-form')">Get my boarding pass</button>
+      <button class="btn-primary" onclick="show('s-form')">Get my AeroBuzz Boarding Pass</button>
     </div>
   </div>
 
@@ -417,7 +417,7 @@
 
     <div class="page-body">
       <div class="form-title">Your Details</div>
-      <div class="form-sub">Fill in your details and get your boarding pass</div>
+      <div class="form-sub">Fill in your details and get your AeroBuzz Boarding Pass</div>
 
       <div class="section-lbl">Personal</div>
 
@@ -469,24 +469,24 @@
           <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
         <div class="success-title">Checked In</div>
-        <div class="success-sub">Your boarding pass has been sent to your email inbox<br>Open it on your phone and show the QR at any store</div>
+        <div class="success-sub">Your AeroBuzz Boarding Pass has been sent to your email inbox<br>Open it on your phone and show the QR at any store</div>
 
         <div class="pass-badge" id="r-pass-id">GMR-XXXXXX</div>
 
         <div class="summary-card">
           <div class="summary-card-head">Delivery Summary</div>
           <div class="summary-row"><span class="sr-key">Sent to</span><span class="sr-val" id="r-email">—</span></div>
-          <div class="summary-row"><span class="sr-key">Pass ID</span><span class="sr-val" id="r-pid">—</span></div>
+          <div class="summary-row"><span class="sr-key">AeroBuzz ID</span><span class="sr-val" id="r-pid">—</span></div>
           <div class="summary-row"><span class="sr-key">Status</span><span class="sr-val green">Delivered</span></div>
           <div class="summary-row"><span class="sr-key">Valid until</span><span class="sr-val" id="r-timer">24h 00m 00s</span></div>
         </div>
 
-        <button class="btn-primary" style="width:100%" onclick="downloadPass()">Download Pass</button>
+        <button class="btn-primary" style="width:100%" onclick="downloadPass()">Download AeroBuzz Boarding Pass</button>
       </div>
 
       <!-- Error -->
       <div class="error-wrap" id="st-error">
-        <div class="err-title">Could not send pass</div>
+        <div class="err-title">Could not send AeroBuzz Boarding Pass</div>
         <div class="err-msg" id="r-err-msg">Something went wrong</div>
         <button class="btn-primary" onclick="show('s-form')">Try Again</button>
       </div>
@@ -560,7 +560,7 @@
     if (!currentPassId) return;
     const a = document.createElement('a');
     a.href     = `${API}/passes/${currentPassId}.png`;
-    a.download = `GMR-Aerocity-Pass-${currentPassId}.png`;
+    a.download = `AeroBuzz-Boarding-Pass-${currentPassId}.png`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

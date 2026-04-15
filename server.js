@@ -35,7 +35,7 @@ function todayStr() {
   return `${String(d.getDate()).padStart(2,'0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-// ── Boarding Pass HTML — Aerocity destination design ───────────────────────
+// ── AeroBuzz Boarding Pass HTML — Aerocity destination design ──────────────
 function buildPassHTML({ passId, name, email, phone, qrSrc }) {
   const seed = passId.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
   const bars = Array.from({ length: 44 }, (_, i) => {
@@ -108,7 +108,7 @@ body{width:840px;height:360px;overflow:hidden;background:transparent;font-family
 <div class="pass">
 
   <div class="hd">
-    <div><div class="ht">GMR AEROCITY</div><div class="hs">NEW DELHI &nbsp;·&nbsp; EXCLUSIVE BOARDING PASS</div></div>
+    <div><div class="ht">GMR AEROCITY</div><div class="hs">NEW DELHI &nbsp;·&nbsp; AeroBuzz Boarding Pass</div></div>
     <div class="hb">UP TO 20% OFF</div>
   </div>
 
@@ -139,7 +139,7 @@ body{width:840px;height:360px;overflow:hidden;background:transparent;font-family
 
       <!-- Pass meta -->
       <div class="meta-row" style="justify-content: space-between;">
-        <div class="meta-item"><div class="ml">Pass ID</div><div class="mv">${passId}</div></div>
+        <div class="meta-item"><div class="ml">AeroBuzz ID</div><div class="mv">${passId}</div></div>
         <div class="meta-item"><div class="ml">Date</div><div class="mv">${todayStr()}</div></div>
       </div>
 
@@ -169,7 +169,7 @@ body{width:840px;height:360px;overflow:hidden;background:transparent;font-family
 </body></html>`;
 }
 
-// ── Generate pass PNG ──────────────────────────────────────────────────────
+// ── Generate AeroBuzz Boarding Pass PNG ────────────────────────────────────
 async function generatePassImage(passData) {
   const qrData = `GMR-PASS|${passData.passId}|${passData.name}|${passData.email}`;
   const qrSrc  = await QRCode.toDataURL(qrData, {
@@ -239,7 +239,7 @@ body{margin:0;padding:0;background:#F4F5F7;font-family:Arial,sans-serif}
     <tr>
       <td valign="middle">
         <h1>GMR AEROCITY</h1>
-        <p>NEW DELHI &nbsp;&middot;&nbsp; EXCLUSIVE BOARDING PASS</p>
+        <p>NEW DELHI &nbsp;&middot;&nbsp; AeroBuzz Boarding Pass</p>
       </td>
       <td align="right" valign="middle">
         <img src="https://gmr-4a30.onrender.com/gmr-logo.png" alt="GMR" style="height:32px; background:#fff; padding:4px 8px; border-radius:6px; display:block;" />
@@ -248,13 +248,13 @@ body{margin:0;padding:0;background:#F4F5F7;font-family:Arial,sans-serif}
   </table>
   <div class="body">
     <div class="greeting">Hi ${name},</div>
-    <div class="sub">Your GMR Aerocity boarding pass is ready show the pass (or scan the QR code) at the billing counter of any partner store to avail your discount</div>
+    <div class="sub">Your AeroBuzz Boarding Pass is ready show the pass (or scan the QR code) at the billing counter of any partner store to avail your discount</div>
 
-    <img src="${passImgUrl}" alt="GMR Aerocity Pass" class="pass-img" />
+    <img src="${passImgUrl}" alt="AeroBuzz Boarding Pass" class="pass-img" />
 
     <div class="card">
-      <div class="card-head">Pass Details</div>
-      <div class="row"><span class="rk">Pass ID</span><span class="rv">${passId}</span></div>
+      <div class="card-head">AeroBuzz Boarding Pass Details</div>
+      <div class="row"><span class="rk">AeroBuzz ID</span><span class="rv">${passId}</span></div>
       <div class="row"><span class="rk">Guest</span><span class="rv">${name.toUpperCase()}</span></div>
       <div class="row"><span class="rk">Email</span><span class="rv">${email}</span></div>
       <div class="row"><span class="rk">Phone</span><span class="rv">${phone}</span></div>
@@ -296,10 +296,10 @@ async function sendPassEmail({ toEmail, name, passId, phone, imagePath }) {
 
   const payload = {
     to:        toEmail,
-    subject:   `Your GMR Aerocity Boarding Pass — ${passId}`,
+    subject:   `Your AeroBuzz Boarding Pass — ${passId}`,
     html:      buildEmailHTML({ name, passId, email: toEmail, phone, passImgUrl }),
     imgBase64: imageBase64,
-    imgName:   `GMR-Pass-${passId}.png`
+    imgName:   `AeroBuzz-Boarding-Pass-${passId}.png`
   };
 
   const response = await fetch(GAS_URL, {
@@ -327,7 +327,7 @@ app.post('/send-pass', async (req, res) => {
     const cleanPhone = phone.replace(/\s/g, '');
     const displayPhone = cleanPhone.startsWith('+') ? cleanPhone : `+91 ${cleanPhone}`;
 
-    console.log(`Generating pass for ${name} (${passId}) → ${email}`);
+    console.log(`Generating AeroBuzz Boarding Pass for ${name} (${passId}) → ${email}`);
 
     const imagePath = await generatePassImage({
       passId,
@@ -355,6 +355,6 @@ app.post('/send-pass', async (req, res) => {
 // ── Start ──────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`\nGMR Aerocity Pass Server → http://localhost:${PORT}`);
+  console.log(`\nAeroBuzz Boarding Pass Server → http://localhost:${PORT}`);
   console.log(`Using Google Apps Script Webhook for emails.\n`);
 });

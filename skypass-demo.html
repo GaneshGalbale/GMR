@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SkyPass — Airport Rewards Demo</title>
+  <title>AeroBuzz Boarding Pass — Airport Rewards Demo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -133,7 +133,7 @@
     .btn-back:hover { border-color: #6b7a99; color: #eaf0ff; }
     .btn-row .btn-primary { flex: 2; }
 
-    /* ── Boarding Pass ── */
+    /* ── AeroBuzz Boarding Pass ── */
     .success-header { text-align: center; margin-bottom: 20px; }
     .success-icon {
       width: 52px; height: 52px; border-radius: 50%;
@@ -236,12 +236,12 @@
   <!-- ── SCREEN 1: WELCOME ── -->
   <div class="screen active" id="s-welcome">
     <div class="welcome-card">
-      <div class="airport-logo">SKYPASS</div>
+      <div class="airport-logo">AEROBUZZ</div>
       <div class="tagline">Airport Rewards Program</div>
       <div class="scan-anim">✦</div>
       <div class="welcome-title">Welcome, Traveller</div>
       <div class="welcome-sub">
-        You've scanned the SkyPass QR code. Register in 60 seconds to unlock exclusive discounts at 40+ airport stores &amp; cafés — valid for today's journey only.
+        You've scanned the AeroBuzz Boarding Pass QR code. Register in 60 seconds to unlock exclusive discounts at 40+ airport stores &amp; cafés — valid for today's journey only.
       </div>
       <button class="btn-primary" onclick="show('s-form')">Get Started →</button>
       <div class="partner-row">
@@ -333,25 +333,25 @@
 
       <div class="btn-row">
         <button class="btn-back" onclick="show('s-welcome')">← Back</button>
-        <button class="btn-primary" onclick="generatePass()">Generate My Pass ✦</button>
+        <button class="btn-primary" onclick="generatePass()">Generate My AeroBuzz Boarding Pass ✦</button>
       </div>
     </div>
   </div>
 
-  <!-- ── SCREEN 3: BOARDING PASS ── -->
+  <!-- ── SCREEN 3: AeroBuzz Boarding Pass ── -->
   <div class="screen" id="s-pass">
     <div class="success-header">
       <div class="success-icon">✓</div>
-      <div class="success-title">Your SkyPass is Ready!</div>
+      <div class="success-title">Your AeroBuzz Boarding Pass is Ready!</div>
       <div class="success-sub">Show QR at any partner store to avail your discount</div>
     </div>
 
     <div class="pass">
       <div class="pass-top">
         <div class="pass-airline">
-          <div class="pass-airline-name">SKYPASS</div>
+          <div class="pass-airline-name">AEROBUZZ</div>
           <div class="pass-type">
-            REWARDS PASS
+            AeroBuzz Boarding Pass
             <span id="p-class">ECONOMY</span>
           </div>
         </div>
@@ -394,7 +394,7 @@
           <div class="pass-pax-name" id="p-name">ARJUN SHARMA</div>
         </div>
         <div style="text-align:right">
-          <div class="pass-pax-label">Pass ID</div>
+          <div class="pass-pax-label">AeroBuzz ID</div>
           <div class="pass-pax-name" id="p-id">SKY-000000</div>
         </div>
       </div>
@@ -439,7 +439,7 @@
 
   function randId() {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let r = 'SKY-';
+    let r = 'AB-';
     for (let i = 0; i < 6; i++) r += chars[Math.floor(Math.random() * chars.length)];
     return r;
   }
